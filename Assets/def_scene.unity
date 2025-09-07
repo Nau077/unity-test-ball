@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 371901939}
   - component: {fileID: 371901938}
   - component: {fileID: 371901941}
+  - component: {fileID: 371901942}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -226,6 +227,20 @@ MonoBehaviour:
   acceleration: 12
   gravity: -9.81
   jumpHeight: 1.2
+--- !u!114 &371901942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371901937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6117dfd4057e37d49a6b4d5ecaa7fea4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BoundsLimiter
+  areaRenderer: {fileID: 741476941}
+  extraPadding: 0.02
 --- !u!1 &741476939
 GameObject:
   m_ObjectHideFlags: 0
