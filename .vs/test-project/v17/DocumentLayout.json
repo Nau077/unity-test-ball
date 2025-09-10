@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\unity-games\\test-project\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{2CD12E51-54A3-1B49-BB94-EBEDE003A4F7}|Assembly-CSharp.csproj|c:\\unity-games\\test-project\\assets\\script\\gridmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2CD12E51-54A3-1B49-BB94-EBEDE003A4F7}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\gridmanager.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{2CD12E51-54A3-1B49-BB94-EBEDE003A4F7}|Assembly-CSharp.csproj|c:\\unity-games\\test-project\\assets\\script\\playerinteractor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2CD12E51-54A3-1B49-BB94-EBEDE003A4F7}|Assembly-CSharp.csproj|solutionrelative:assets\\script\\playerinteractor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
@@ -19,12 +23,25 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "GridManager.cs",
+              "DocumentMoniker": "C:\\unity-games\\test-project\\Assets\\script\\GridManager.cs",
+              "RelativeDocumentMoniker": "Assets\\script\\GridManager.cs",
+              "ToolTip": "C:\\unity-games\\test-project\\Assets\\script\\GridManager.cs",
+              "RelativeToolTip": "Assets\\script\\GridManager.cs",
+              "ViewState": "AgIAALcAAAAAAAAAAAAiwMYAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-10T08:59:57.135Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "PlayerInteractor.cs",
               "DocumentMoniker": "C:\\unity-games\\test-project\\Assets\\script\\PlayerInteractor.cs",
               "RelativeDocumentMoniker": "Assets\\script\\PlayerInteractor.cs",
               "ToolTip": "C:\\unity-games\\test-project\\Assets\\script\\PlayerInteractor.cs",
               "RelativeToolTip": "Assets\\script\\PlayerInteractor.cs",
-              "ViewState": "AgIAAEwAAAAAAAAAAAAmwGcAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAGQAAAAAAAAAAAAUwG4AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-09-10T06:41:03.658Z",
               "EditorCaption": ""

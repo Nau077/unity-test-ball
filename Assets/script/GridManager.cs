@@ -186,4 +186,14 @@ void OnDrawGizmosSelected()
     Gizmos.DrawCube(center, size);
 }
 #endif
+
+//#if UNITY_EDITOR
+//    void OnValidate()
+//    {
+//        // В редакторе, когда меняешь Width/Height/CellSize,
+//        // автоматически центрирует Origin под плоскость в (0,0,0).
+//        if (!Application.isPlaying)
+//            Origin = new Vector3(-Width * CellSize / 2f, 0f, -Height * CellSize / 2f);
+//    }
+//#endif
 }
