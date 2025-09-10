@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 371901938}
   - component: {fileID: 371901941}
   - component: {fileID: 371901942}
+  - component: {fileID: 371901943}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -241,6 +242,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BoundsLimiter
   areaRenderer: {fileID: 741476941}
   extraPadding: 0.02
+--- !u!114 &371901943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 371901937}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6dcd3173954a6ad4abe783cfb15f6cb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInteractor
+  grid: {fileID: 882081519}
+  player: {fileID: 1842476887}
+  aheadDistance: 0.8
+  maxSnapDistance: 1.5
+  tool: 0
 --- !u!1 &540074902
 GameObject:
   m_ObjectHideFlags: 0
@@ -1029,6 +1047,11 @@ PrefabInstance:
 --- !u!4 &1723662816 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5251107426523682287, guid: 6a3c3c37133b6ae4d9590995c8166d88, type: 3}
+  m_PrefabInstance: {fileID: 1619074587}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1842476887 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8234436724202565122, guid: 6a3c3c37133b6ae4d9590995c8166d88, type: 3}
   m_PrefabInstance: {fileID: 1619074587}
   m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
