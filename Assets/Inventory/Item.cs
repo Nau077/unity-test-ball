@@ -6,6 +6,10 @@ using UnityEngine;
 // Нужно для того, чтобы легко создавать и хранить разные предметы (мечи, семена, броня).
 public class Item : ScriptableObject
 {
-    public string itemName = "New Item";   // Название
-    public Sprite icon = null;             // Иконка
+    public string itemName;
+    public Sprite icon;
+    public bool stackable = true;
+
+    [TextArea(2, 5)]
+    public string description;   // новое поле
 }
