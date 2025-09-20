@@ -1,37 +1,37 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class PlayerLoot : MonoBehaviour
 {
-    public float lootRange = 2f;
-    private InventoryUI inventory;
+    private LootItem currentLoot;
 
-    private PlayerControls controls;
-
-    void Awake()
+    void Update()
     {
-        controls = new PlayerControls();
-        controls.Player.Enable();
-        controls.Player.Loot.performed += ctx => TryLoot();
-    }
-
-    void Start()
-    {
-        inventory = FindObjectOfType<InventoryUI>();
-    }
-
-    void TryLoot()
-    {
-        Collider[] hits = Physics.OverlapSphere(transform.position, lootRange);
-        foreach (var hit in hits)
+        // Если игрок в зоне и жмёт X
+        if (currentLoot != null && Input.GetKeyDown(KeyCode.X))
         {
-            LootItem loot = hit.GetComponent<LootItem>();
-            if (loot != null)
-            {
-                inventory.AddItem(loot.item, loot.amount);
-                Destroy(hit.gameObject); // убираем с земли
-                break;
-            }
+            InventoryUI.Instance.AddItem(currentLoot.item, currentLoot.amount);
+            Destroy(currentLoot.gameObject); // убираем предмет с земли
+            currentLoot = null;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        LootItem loot = other.GetComponent<LootItem>();
+        if (loot != null)
+        {
+            currentLoot = loot;
+            Debug.Log($"Подойди и нажми X, чтобы поднять {loot.item.itemName}");
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        LootItem loot = other.GetComponent<LootItem>();
+        if (loot != null && loot == currentLoot)
+        {
+            currentLoot = null;
+            Debug.Log("Вышел из зоны подбора");
         }
     }
 }

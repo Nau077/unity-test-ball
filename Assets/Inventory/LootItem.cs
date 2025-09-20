@@ -1,19 +1,16 @@
 using UnityEngine;
 
-// LootItem.cs
-// Отвечает за предмет, который лежит на земле.
-// Хранит ссылку на Item (например, металл) и количество.
 public class LootItem : MonoBehaviour
 {
-    public Item item;        // какой предмет лежит
-    public int amount = 1;   // сколько штук
+    public Item item;   // что за предмет (ScriptableObject)
+    public int amount = 1;
 
-    void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
-        // Чтобы в редакторе видеть над кубиком подпись
         if (item != null)
         {
-            UnityEditor.Handles.Label(transform.position + Vector3.up * 1.5f, $"{item.itemName} x{amount}");
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireCube(transform.position, Vector3.one * 0.5f);
         }
     }
 }
