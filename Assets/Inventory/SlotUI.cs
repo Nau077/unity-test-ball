@@ -1,24 +1,53 @@
 using UnityEngine;
 using UnityEngine.UI;
-// SlotUI.cs
-// Управляет одним слотом в инвентаре (показывает иконку предмета, очищает слот).
-// Нужно для отображения предмета внутри отдельной ячейки инвентаря.
+using TMPro; // ВАЖНО!
+
 public class SlotUI : MonoBehaviour
 {
-    public Image icon;   // ссылка на картинку ItemIcon
-    private Item item;   // что лежит в этом слоте
+    [Header("Refs")]
+    public Image icon;                 // ItemIcon (Image)
+    public TMP_Text amountText;        // можно не назначать — найдём сами
 
-    public void AddItem(Item newItem)
+    private Item item;
+    public int Amount { get; private set; }
+
+    void Awake()
+    {
+        // если в инспекторе не назначено — попробуем найти в детях
+        if (amountText == null)
+            amountText = GetComponentInChildren<TMP_Text>(true);
+    }
+
+    public void SetItem(Item newItem, int amount)
     {
         item = newItem;
+        Amount = amount;
         icon.sprite = item.icon;
-        icon.color = Color.white; // делаем иконку видимой
+        icon.color = Color.white;
+        UpdateText();
+    }
+
+    public void AddAmount(int amount)
+    {
+        Amount += amount;
+        UpdateText();
     }
 
     public void ClearSlot()
     {
         item = null;
+        Amount = 0;
         icon.sprite = null;
-        icon.color = new Color(1, 1, 1, 0); // делаем иконку прозрачной
+        icon.color = new Color(1, 1, 1, 0);
+        if (amountText != null) amountText.text = "";
+    }
+
+    public bool HasItem(Item checkItem) => item == checkItem;
+    public bool IsEmpty() => item == null;
+
+    private void UpdateText()
+    {
+        if (amountText == null) return;              // нет текста — просто выходим
+        amountText.text = Amount > 1 ? $"{Amount}" : "";
     }
 }
