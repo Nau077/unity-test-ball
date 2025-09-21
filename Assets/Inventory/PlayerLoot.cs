@@ -6,6 +6,13 @@ public class PlayerLoot : MonoBehaviour
 
     void Update()
     {
+
+        if (InventoryUI.Instance == null)
+        {
+            Debug.LogError("❌ InventoryUI всё ещё null, не нашли!");
+            return;
+        }
+
         if (currentLoot != null && Input.GetKeyDown(KeyCode.X))
         {
             if (InventoryUI.Instance == null)

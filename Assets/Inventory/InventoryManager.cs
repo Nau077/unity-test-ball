@@ -34,7 +34,7 @@ public class InventoryManager : MonoBehaviour
             if (active)
             {
                 // 🔥 Форсим обновление слотов
-                InventoryUI.Instance?.RefreshUI();
+                //    InventoryUI.Instance?.RefreshUI();
 
                 controls.Player.Disable(); // замораживаем управление
             }

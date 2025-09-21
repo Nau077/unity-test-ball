@@ -39,10 +39,12 @@ public class InventoryUI : MonoBehaviour
 
         public void SetItem(Item newItem, int newAmount)
         {
+            Debug.Log("мы здесь");
+            Debug.Log(newItem.itemName);
             item = newItem;
             amount = newAmount;
             slotUI.SetItem(newItem, newAmount);
-            slotUI.ForceRefresh(); // 🔥 жёстко обновляем UI
+            //  slotUI.ForceRefresh(); // 🔥 жёстко обновляем UI
         }
 
         public void AddAmount(int add)
@@ -52,12 +54,27 @@ public class InventoryUI : MonoBehaviour
                 amount = InventoryUI.MaxStack;
 
             slotUI.SetItem(item, amount);
-            slotUI.ForceRefresh(); // 🔥 жёстко обновляем UI
+            //  slotUI.ForceRefresh(); // 🔥 жёстко обновляем UI
         }
 
 
 
-        public bool HasItem(Item checkItem) => item == checkItem;
+        public bool HasItem(Item checkItem)
+        {
+            Debug.Log("[HasItem] Проверка слота");
+
+            if (item == null)
+            {
+                Debug.Log("[HasItem] В слоте пусто");
+                return false;
+            }
+
+            Debug.Log($"[HasItem] itemName: {item.itemName},   (ID={item.itemID})");
+            Debug.Log($"[HasItem] checkItem:    {checkItem.itemName}, (ID={checkItem.itemID})");
+            return item.itemID == checkItem.itemID;
+        }
+
+
         public bool IsEmpty() => item == null;
     }
 
@@ -106,7 +123,7 @@ public class InventoryUI : MonoBehaviour
                 int canAdd = Mathf.Min(MaxStack - slot.amount, remaining);
                 slot.AddAmount(canAdd);
                 remaining -= canAdd;
-                Debug.Log($"[AddItem] Стакуем {newItem.itemName}, остаток {remaining}");
+                // Debug.Log($"[AddItem] Стакуем {newItem.itemName}, остаток {remaining}");
 
                 if (remaining <= 0)
                 {
@@ -151,20 +168,4 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    // 🔥 метод для InventoryManager
-    public void RefreshUI()
-    {
-        EnsureInitialized();
-
-        foreach (var slot in slots)
-        {
-            if (slot.item != null)
-            {
-                slot.slotUI.SetItem(slot.item, slot.amount);
-            }
-            // ❌ больше не очищаем, оставляем как есть
-        }
-
-        Debug.Log("UI обновлён вручную при открытии");
-    }
 }

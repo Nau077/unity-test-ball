@@ -16,6 +16,7 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private Item item;
     public int Amount { get; private set; }
 
+
     void Awake()
     {
         // На всякий случай — проверим, что не нацепили два SlotUI на один объект
