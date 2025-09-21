@@ -1,40 +1,47 @@
 using UnityEngine;
-using UnityEngine.InputSystem; // подключаем новый Input System
+using UnityEngine.InputSystem;
 
 public class InventoryManager : MonoBehaviour
 {
     [Header("UI")]
-    [SerializeField] private GameObject inventoryPanel; // сюда перетащим InventoryPanel из сцены
+    [SerializeField] private GameObject inventoryPanel;
 
     private PlayerControls controls;
 
     private void Awake()
     {
-        // создаём экземпляр PlayerControls
         controls = new PlayerControls();
-
-        // подписываемся на событие нажатия кнопки
         controls.UI.ToggleInventory.performed += ctx => ToggleInventory();
     }
 
     private void OnEnable()
     {
-        controls.UI.Enable(); // включаем карту действий UI
+        controls.UI.Enable();
     }
 
     private void OnDisable()
     {
-        controls.UI.Disable(); // выключаем карту действий UI
+        controls.UI.Disable();
     }
 
-    /// <summary>
-    /// Открыть/закрыть инвентарь
-    /// </summary>
     private void ToggleInventory()
     {
         if (inventoryPanel != null)
         {
-            inventoryPanel.SetActive(!inventoryPanel.activeSelf);
+            bool active = !inventoryPanel.activeSelf;
+            inventoryPanel.SetActive(active);
+
+            if (active)
+            {
+                // 🔥 Форсим обновление слотов
+                InventoryUI.Instance?.RefreshUI();
+
+                controls.Player.Disable(); // замораживаем управление
+            }
+            else
+            {
+                controls.Player.Enable();
+            }
         }
         else
         {

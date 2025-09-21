@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -15,9 +14,12 @@ public class InventoryUI : MonoBehaviour
     private List<SlotData> slots = new List<SlotData>();
     private const int MaxStack = 99;
 
+    private bool initialized = false;
+
     private void Awake()
     {
         Instance = this;
+        EnsureInitialized();
     }
 
     // -------------------------------
@@ -32,7 +34,7 @@ public class InventoryUI : MonoBehaviour
         public SlotData(SlotUI slotUI)
         {
             this.slotUI = slotUI;
-            Clear();
+
         }
 
         public void SetItem(Item newItem, int newAmount)
@@ -40,6 +42,7 @@ public class InventoryUI : MonoBehaviour
             item = newItem;
             amount = newAmount;
             slotUI.SetItem(newItem, newAmount);
+            slotUI.ForceRefresh(); // 🔥 жёстко обновляем UI
         }
 
         public void AddAmount(int add)
@@ -47,39 +50,41 @@ public class InventoryUI : MonoBehaviour
             amount += add;
             if (amount > InventoryUI.MaxStack)
                 amount = InventoryUI.MaxStack;
-            slotUI.AddAmount(add);
+
+            slotUI.SetItem(item, amount);
+            slotUI.ForceRefresh(); // 🔥 жёстко обновляем UI
         }
 
-        public void Clear()
-        {
-            item = null;
-            amount = 0;
-            slotUI.ClearSlot();
-        }
+
 
         public bool HasItem(Item checkItem) => item == checkItem;
         public bool IsEmpty() => item == null;
     }
 
     // -------------------------------
-    // Unity lifecycle
+    // Ленивая инициализация
     // -------------------------------
-    void Start()
+    private void EnsureInitialized()
     {
-        for (int i = 0; i < slotCount; i++)
+        if (initialized) return;
+
+
+        foreach (Transform child in slotsParent)
+        {
+            var slotUI = child.GetComponent<SlotUI>();
+            if (slotUI != null)
+                slots.Add(new SlotData(slotUI));
+        }
+
+        int toCreate = slotCount - slots.Count;
+        for (int i = 0; i < toCreate; i++)
         {
             var slotGO = Instantiate(slotPrefab, slotsParent);
             var slotUI = slotGO.GetComponent<SlotUI>();
             slots.Add(new SlotData(slotUI));
         }
 
-        // Тестовые предметы
-        Item seed = Resources.Load<Item>("SeedItem");
-        Item metal = Resources.Load<Item>("MetallItem");
-
-        AddItem(seed, 5);
-        AddItem(metal, 12);
-        AddItem(metal, 200);
+        initialized = true;
     }
 
     // -------------------------------
@@ -87,8 +92,13 @@ public class InventoryUI : MonoBehaviour
     // -------------------------------
     public void AddItem(Item newItem, int amount)
     {
+        //  EnsureInitialized(); // 🔥 гарантируем, что слоты готовы
+
+        Debug.Log($"[AddItem] Добавляем {newItem.itemName} x{amount}, slots.Count={slots.Count}");
+
         int remaining = amount;
 
+        // сначала стакуем
         foreach (var slot in slots)
         {
             if (slot.HasItem(newItem) && slot.amount < MaxStack)
@@ -96,10 +106,17 @@ public class InventoryUI : MonoBehaviour
                 int canAdd = Mathf.Min(MaxStack - slot.amount, remaining);
                 slot.AddAmount(canAdd);
                 remaining -= canAdd;
-                if (remaining <= 0) return;
+                Debug.Log($"[AddItem] Стакуем {newItem.itemName}, остаток {remaining}");
+
+                if (remaining <= 0)
+                {
+                    DebugInventory();
+                    return;
+                }
             }
         }
 
+        // если некуда стакать — кладём в пустые
         foreach (var slot in slots)
         {
             if (slot.IsEmpty())
@@ -107,11 +124,47 @@ public class InventoryUI : MonoBehaviour
                 int putAmount = Mathf.Min(MaxStack, remaining);
                 slot.SetItem(newItem, putAmount);
                 remaining -= putAmount;
-                if (remaining <= 0) return;
+                Debug.Log($"[AddItem] Новый слот: {newItem.itemName} x{putAmount}");
+
+                if (remaining <= 0)
+                {
+                    DebugInventory();
+                    return;
+                }
             }
         }
 
         if (remaining > 0)
-            Debug.LogWarning($"Не хватило места для {newItem.name}, остаток: {remaining}");
+            Debug.LogWarning($"[AddItem] Не хватило места для {newItem.itemName}, остаток {remaining}");
+
+        DebugInventory();
+    }
+
+    private void DebugInventory()
+    {
+        Debug.Log("=== Текущее содержимое инвентаря ===");
+        for (int i = 0; i < slots.Count; i++)
+        {
+            var slot = slots[i];
+            if (!slot.IsEmpty())
+                Debug.Log($"Слот {i + 1}: {slot.item.itemName} x{slot.amount}");
+        }
+    }
+
+    // 🔥 метод для InventoryManager
+    public void RefreshUI()
+    {
+        EnsureInitialized();
+
+        foreach (var slot in slots)
+        {
+            if (slot.item != null)
+            {
+                slot.slotUI.SetItem(slot.item, slot.amount);
+            }
+            // ❌ больше не очищаем, оставляем как есть
+        }
+
+        Debug.Log("UI обновлён вручную при открытии");
     }
 }

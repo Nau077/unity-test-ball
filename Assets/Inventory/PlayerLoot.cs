@@ -6,11 +6,24 @@ public class PlayerLoot : MonoBehaviour
 
     void Update()
     {
-        // Если игрок в зоне и жмёт X
         if (currentLoot != null && Input.GetKeyDown(KeyCode.X))
         {
+            if (InventoryUI.Instance == null)
+            {
+                Debug.LogError("❌ InventoryUI.Instance == null! В сцене нет активного объекта с InventoryUI");
+                return;
+            }
+
+            if (currentLoot.item == null)
+            {
+                Debug.LogError("❌ currentLoot.item == null! У LootItem не назначен Item");
+                return;
+            }
+
+            Debug.Log($"▶ Добавляем {currentLoot.amount} x {currentLoot.item.itemName} в инвентарь");
             InventoryUI.Instance.AddItem(currentLoot.item, currentLoot.amount);
-            Destroy(currentLoot.gameObject); // убираем предмет с земли
+
+            Destroy(currentLoot.gameObject);
             currentLoot = null;
         }
     }
