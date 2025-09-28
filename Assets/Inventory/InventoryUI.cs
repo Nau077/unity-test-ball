@@ -34,17 +34,16 @@ public class InventoryUI : MonoBehaviour
         public SlotData(SlotUI slotUI)
         {
             this.slotUI = slotUI;
-
+            this.item = null;
+            this.amount = 0;
+            slotUI.Clear(); // 🔥 сразу чистим UI
         }
 
         public void SetItem(Item newItem, int newAmount)
         {
-            Debug.Log("мы здесь");
-            Debug.Log(newItem.itemName);
             item = newItem;
             amount = newAmount;
-            slotUI.SetItem(newItem, newAmount);
-            //  slotUI.ForceRefresh(); // 🔥 жёстко обновляем UI
+            slotUI.ForceRefresh(item, amount); // только UI-отрисовка
         }
 
         public void AddAmount(int add)
@@ -53,30 +52,21 @@ public class InventoryUI : MonoBehaviour
             if (amount > InventoryUI.MaxStack)
                 amount = InventoryUI.MaxStack;
 
-            slotUI.SetItem(item, amount);
-            //  slotUI.ForceRefresh(); // 🔥 жёстко обновляем UI
+            slotUI.ForceRefresh(item, amount);
         }
-
-
 
         public bool HasItem(Item checkItem)
         {
-            Debug.Log("[HasItem] Проверка слота");
-
-            if (item == null)
-            {
-                Debug.Log("[HasItem] В слоте пусто");
-                return false;
-            }
-
-            Debug.Log($"[HasItem] itemName: {item.itemName},   (ID={item.itemID})");
-            Debug.Log($"[HasItem] checkItem:    {checkItem.itemName}, (ID={checkItem.itemID})");
-            return item.itemID == checkItem.itemID;
+            return item != null && item.itemID == checkItem.itemID;
         }
 
-
-        public bool IsEmpty() => item == null;
+        public bool IsEmpty()
+        {
+            Debug.Log($"[IsEmpty] slotUI={slotUI.name}, item={(item == null ? "NULL" : item.itemName)} amount={amount}");
+            return item == null || amount <= 0;
+        }
     }
+    
 
     // -------------------------------
     // Ленивая инициализация
@@ -109,8 +99,8 @@ public class InventoryUI : MonoBehaviour
     // -------------------------------
     public void AddItem(Item newItem, int amount)
     {
-        //  EnsureInitialized(); // 🔥 гарантируем, что слоты готовы
-
+        EnsureInitialized(); // 🔥 гарантируем, что слоты готовы
+        // Debug.Log($"[AddItem] Start. slots.Count={slots.Count}, initialized={initialized}");
         Debug.Log($"[AddItem] Добавляем {newItem.itemName} x{amount}, slots.Count={slots.Count}");
 
         int remaining = amount;
@@ -118,6 +108,7 @@ public class InventoryUI : MonoBehaviour
         // сначала стакуем
         foreach (var slot in slots)
         {
+            Debug.Log($"[AddItem] Проверяем слот {slot.slotUI.name}, item={(slot.item == null ? "NULL" : slot.item.itemName)}, amount={slot.amount}");
             if (slot.HasItem(newItem) && slot.amount < MaxStack)
             {
                 int canAdd = Mathf.Min(MaxStack - slot.amount, remaining);

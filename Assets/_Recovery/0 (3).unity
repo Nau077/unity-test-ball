@@ -164,7 +164,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6828277148257553943, guid: e835b98434388eb4c9a168bc3bedd613, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 6828277148257553943, guid: e835b98434388eb4c9a168bc3bedd613, type: 3}
       propertyPath: m_LocalPosition.z
@@ -454,6 +454,7 @@ GameObject:
   - component: {fileID: 391350478}
   - component: {fileID: 391350480}
   - component: {fileID: 391350479}
+  - component: {fileID: 391350481}
   m_Layer: 5
   m_Name: InventoryPanel
   m_TagString: Untagged
@@ -519,6 +520,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 391350477}
   m_CullTransparentMesh: 1
+--- !u!114 &391350481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 391350477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65f1a85bace605c4fb2c9c78743a6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
+  slotPrefab: {fileID: 7115919941017918520, guid: c74ae36e85142184db746d38e4f519de, type: 3}
+  slotsParent: {fileID: 1662129726}
+  slotCount: 25
 --- !u!1 &540074902
 GameObject:
   m_ObjectHideFlags: 0
@@ -780,11 +796,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6828277148257553943, guid: e835b98434388eb4c9a168bc3bedd613, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.7961774
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 6828277148257553943, guid: e835b98434388eb4c9a168bc3bedd613, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.4
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6828277148257553943, guid: e835b98434388eb4c9a168bc3bedd613, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1224,7 +1240,6 @@ GameObject:
   - component: {fileID: 921684148}
   - component: {fileID: 921684147}
   - component: {fileID: 921684146}
-  - component: {fileID: 921684150}
   m_Layer: 5
   m_Name: InventoryCanvas
   m_TagString: Untagged
@@ -1315,21 +1330,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
---- !u!114 &921684150
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 921684145}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65f1a85bace605c4fb2c9c78743a6c36, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
-  slotPrefab: {fileID: 7115919941017918520, guid: c74ae36e85142184db746d38e4f519de, type: 3}
-  slotsParent: {fileID: 1662129726}
-  slotCount: 25
 --- !u!1 &952889684
 GameObject:
   m_ObjectHideFlags: 0
@@ -1512,11 +1512,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6828277148257553943, guid: e835b98434388eb4c9a168bc3bedd613, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.4
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6828277148257553943, guid: e835b98434388eb4c9a168bc3bedd613, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6828277148257553943, guid: e835b98434388eb4c9a168bc3bedd613, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1834,6 +1834,53 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5251107426523682287, guid: 6a3c3c37133b6ae4d9590995c8166d88, type: 3}
   m_PrefabInstance: {fileID: 1619074587}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1762137727
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1762137729}
+  - component: {fileID: 1762137728}
+  m_Layer: 0
+  m_Name: InventoryUi
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1762137728
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1762137727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65f1a85bace605c4fb2c9c78743a6c36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryUI
+  slotPrefab: {fileID: 7115919941017918520, guid: c74ae36e85142184db746d38e4f519de, type: 3}
+  slotsParent: {fileID: 1662129726}
+  slotCount: 25
+--- !u!4 &1762137729
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1762137727}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.01404, y: -0, z: 6.53267}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1842476887 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8234436724202565122, guid: 6a3c3c37133b6ae4d9590995c8166d88, type: 3}
@@ -1936,3 +1983,4 @@ SceneRoots:
   - {fileID: 2074185277}
   - {fileID: 247568177}
   - {fileID: 832477380}
+  - {fileID: 1762137729}

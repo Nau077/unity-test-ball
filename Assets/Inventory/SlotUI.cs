@@ -13,48 +13,8 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public GameObject tooltipPanel; // TooltipPanel
     public TMP_Text tooltipText;    // TooltipText (TMP)
 
-    private Item item;
-    public int Amount { get; private set; }
-
-
-    void Awake()
-    {
-        // На всякий случай — проверим, что не нацепили два SlotUI на один объект
-        var dups = GetComponents<SlotUI>();
-        if (dups.Length > 1)
-            Debug.LogError($"[SlotUI] На объекте '{name}' обнаружено {dups.Length} компонентов SlotUI!");
-
-        if (amountText == null)
-            amountText = GetComponentInChildren<TMP_Text>(true);
-
-        if (tooltipPanel != null)
-            tooltipPanel.SetActive(false);
-
-        // ВАЖНО: ничего не чистим здесь.
-    }
-
-    // Если хочешь — можно оставить. Он безопасен, потому что мы больше не трогаем sprite при пустом слоте.
-    void OnEnable() => ForceRefresh();
-
     // ---- API ----
-    public void SetItem(Item newItem, int amount)
-    {
-        item = newItem;
-        Amount = amount;
-        ForceRefresh();
-    }
-
-    public void AddAmount(int amount)
-    {
-        Amount += amount;
-        ForceRefresh();
-    }
-
-    public bool HasItem(Item checkItem) => item == checkItem;
-    public bool IsEmpty() => item == null;
-
-    // ---- Visual refresh ----
-    public void ForceRefresh()
+    public void ForceRefresh(Item item, int amount)
     {
         if (icon != null)
         {
@@ -62,22 +22,20 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             {
                 if (!icon.gameObject.activeSelf) icon.gameObject.SetActive(true);
                 icon.enabled = true;
-                icon.sprite = item.icon;   // <- здесь выставляем спрайт
+                icon.sprite = item.icon;
                 icon.color = Color.white;
             }
             else
             {
-                // Когда слота нет — просто прячем иконку.
-                // НИЧЕГО не делаем со sprite, чтобы никто не "стер" картинку.
                 icon.enabled = false;
             }
         }
 
         if (amountText != null)
         {
-            if (Amount > 1)
+            if (amount > 1)
             {
-                amountText.text = Amount.ToString();
+                amountText.text = amount.ToString();
                 amountText.gameObject.SetActive(true);
             }
             else
@@ -86,16 +44,27 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                 amountText.gameObject.SetActive(false);
             }
         }
+
+        // Тултип
+        if (tooltipPanel != null)
+        {
+            if (item != null)
+                tooltipText.text = $"<b>{item.itemName}</b>\n{item.description}";
+            else
+                tooltipPanel.SetActive(false);
+        }
+    }
+
+    public void Clear()
+    {
+        ForceRefresh(null, 0);
     }
 
     // Tooltip
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (item != null && tooltipPanel != null)
-        {
-            tooltipText.text = $"<b>{item.itemName}</b>\n{item.description}";
+        if (tooltipPanel != null && icon != null && icon.enabled)
             tooltipPanel.SetActive(true);
-        }
     }
 
     public void OnPointerExit(PointerEventData eventData)

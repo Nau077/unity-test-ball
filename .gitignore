@@ -9,6 +9,7 @@
 UserSettings/
 
 # IDE
+.vs/
 .vscode/
 .idea/
 *.csproj
