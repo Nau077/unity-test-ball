@@ -27,19 +27,21 @@ public class SlotUI : MonoBehaviour,
 
         if (icon != null)
         {
-            // иконка всегда активна, чтобы слот ловил Raycast/Drop
+            // иконка ВСЕГДА активна и рейкастная
             if (!icon.gameObject.activeSelf) icon.gameObject.SetActive(true);
+            icon.raycastTarget = true;
 
             if (item != null)
             {
+                icon.enabled = true;
                 icon.sprite = item.icon;
-                icon.color = Color.white;      // видимая
+                icon.color = Color.white;     // видимая
             }
             else
             {
-                icon.sprite = null;            // не держим старый спрайт
-                var c = icon.color;            // делаем прозрачной вместо enabled=false
-                c.a = 0f;
+                icon.enabled = true;            // <-- НЕ выключаем!
+                icon.sprite = null;            // сброс на всякий
+                var c = icon.color; c.a = 0f;   // прозрачная, но кликабельная
                 icon.color = c;
             }
         }
@@ -56,16 +58,16 @@ public class SlotUI : MonoBehaviour,
                 amountText.text = "";
                 amountText.gameObject.SetActive(false);
             }
+            // текст не должен перехватывать клики
+            amountText.raycastTarget = false;
         }
 
-        // Тултип: обновляем текст и ОБЯЗАТЕЛЬНО прячем (чтоб не «залипал»)
         if (tooltipPanel != null)
         {
             if (item != null && tooltipText != null)
                 tooltipText.text = $"<b>{item.itemName}</b>\n{item.description}";
             else if (tooltipText != null)
                 tooltipText.text = "";
-
             tooltipPanel.SetActive(false);
         }
     }
@@ -86,10 +88,10 @@ public class SlotUI : MonoBehaviour,
     }
 
     // ---- Drag & Drop ----
-    public void OnBeginDrag(PointerEventData eventData)
+    public void OnBeginDrag(PointerEventData e)
     {
         if (CurrentItem == null) return;
-        if (tooltipPanel != null) tooltipPanel.SetActive(false); // не залипаем
+        if (tooltipPanel) tooltipPanel.SetActive(false);
         InventoryUI.Instance.StartDrag(this);
     }
 

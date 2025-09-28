@@ -1330,6 +1330,7 @@ MonoBehaviour:
   slotPrefab: {fileID: 7115919941017918520, guid: c74ae36e85142184db746d38e4f519de, type: 3}
   slotsParent: {fileID: 1662129726}
   slotCount: 25
+  dragIconPrefab: {fileID: 2410110150323226323, guid: cbb9b6aadc83e6e45a7abb618fe327db, type: 3}
 --- !u!1 &952889684
 GameObject:
   m_ObjectHideFlags: 0
