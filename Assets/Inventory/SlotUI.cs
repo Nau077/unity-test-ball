@@ -3,7 +3,9 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class SlotUI : MonoBehaviour,
+    IPointerEnterHandler, IPointerExitHandler,
+    IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
 {
     [Header("Refs")]
     public Image icon;              // ItemIcon (Image)
@@ -13,27 +15,38 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public GameObject tooltipPanel; // TooltipPanel
     public TMP_Text tooltipText;    // TooltipText (TMP)
 
-    // ---- API ----
+    // Для InventoryUI
+    public Item CurrentItem { get; private set; }
+    public int CurrentAmount { get; private set; }
+
+    // ---- Отрисовка ----
     public void ForceRefresh(Item item, int amount)
     {
+        CurrentItem = item;
+        CurrentAmount = amount;
+
         if (icon != null)
         {
+            // иконка всегда активна, чтобы слот ловил Raycast/Drop
+            if (!icon.gameObject.activeSelf) icon.gameObject.SetActive(true);
+
             if (item != null)
             {
-                if (!icon.gameObject.activeSelf) icon.gameObject.SetActive(true);
-                icon.enabled = true;
                 icon.sprite = item.icon;
-                icon.color = Color.white;
+                icon.color = Color.white;      // видимая
             }
             else
             {
-                icon.enabled = false;
+                icon.sprite = null;            // не держим старый спрайт
+                var c = icon.color;            // делаем прозрачной вместо enabled=false
+                c.a = 0f;
+                icon.color = c;
             }
         }
 
         if (amountText != null)
         {
-            if (amount > 1)
+            if (item != null && amount > 1)
             {
                 amountText.text = amount.ToString();
                 amountText.gameObject.SetActive(true);
@@ -45,25 +58,24 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             }
         }
 
-        // Тултип
+        // Тултип: обновляем текст и ОБЯЗАТЕЛЬНО прячем (чтоб не «залипал»)
         if (tooltipPanel != null)
         {
-            if (item != null)
+            if (item != null && tooltipText != null)
                 tooltipText.text = $"<b>{item.itemName}</b>\n{item.description}";
-            else
-                tooltipPanel.SetActive(false);
+            else if (tooltipText != null)
+                tooltipText.text = "";
+
+            tooltipPanel.SetActive(false);
         }
     }
 
-    public void Clear()
-    {
-        ForceRefresh(null, 0);
-    }
+    public void Clear() => ForceRefresh(null, 0);
 
-    // Tooltip
+    // ---- Tooltip ----
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (tooltipPanel != null && icon != null && icon.enabled)
+        if (tooltipPanel != null && CurrentItem != null)
             tooltipPanel.SetActive(true);
     }
 
@@ -71,5 +83,28 @@ public class SlotUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         if (tooltipPanel != null)
             tooltipPanel.SetActive(false);
+    }
+
+    // ---- Drag & Drop ----
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (CurrentItem == null) return;
+        if (tooltipPanel != null) tooltipPanel.SetActive(false); // не залипаем
+        InventoryUI.Instance.StartDrag(this);
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        InventoryUI.Instance.UpdateDrag(eventData);
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        InventoryUI.Instance.EndDrag();
+    }
+
+    public void OnDrop(PointerEventData eventData)
+    {
+        InventoryUI.Instance.DropItem(this);
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class InventoryUI : MonoBehaviour
 {
@@ -10,6 +11,11 @@ public class InventoryUI : MonoBehaviour
     public GameObject slotPrefab;
     public Transform slotsParent;
     public int slotCount = 25;
+
+    [Header("Drag&Drop")]
+    public Image dragIconPrefab;   // перетаскиваемая иконка
+    private Image dragIconInstance;
+    private SlotUI draggedSlot;
 
     private List<SlotData> slots = new List<SlotData>();
     private const int MaxStack = 99;
@@ -34,16 +40,16 @@ public class InventoryUI : MonoBehaviour
         public SlotData(SlotUI slotUI)
         {
             this.slotUI = slotUI;
-            this.item = null;
-            this.amount = 0;
-            slotUI.Clear(); // 🔥 сразу чистим UI
+            item = null;
+            amount = 0;
+            slotUI.Clear();
         }
 
         public void SetItem(Item newItem, int newAmount)
         {
             item = newItem;
             amount = newAmount;
-            slotUI.ForceRefresh(item, amount); // только UI-отрисовка
+            slotUI.ForceRefresh(item, amount);
         }
 
         public void AddAmount(int add)
@@ -62,11 +68,9 @@ public class InventoryUI : MonoBehaviour
 
         public bool IsEmpty()
         {
-            Debug.Log($"[IsEmpty] slotUI={slotUI.name}, item={(item == null ? "NULL" : item.itemName)} amount={amount}");
             return item == null || amount <= 0;
         }
     }
-    
 
     // -------------------------------
     // Ленивая инициализация
@@ -75,12 +79,15 @@ public class InventoryUI : MonoBehaviour
     {
         if (initialized) return;
 
-
+        int index = 0;
         foreach (Transform child in slotsParent)
         {
             var slotUI = child.GetComponent<SlotUI>();
             if (slotUI != null)
+            {
                 slots.Add(new SlotData(slotUI));
+                index++;
+            }
         }
 
         int toCreate = slotCount - slots.Count;
@@ -99,32 +106,24 @@ public class InventoryUI : MonoBehaviour
     // -------------------------------
     public void AddItem(Item newItem, int amount)
     {
-        EnsureInitialized(); // 🔥 гарантируем, что слоты готовы
-        // Debug.Log($"[AddItem] Start. slots.Count={slots.Count}, initialized={initialized}");
-        Debug.Log($"[AddItem] Добавляем {newItem.itemName} x{amount}, slots.Count={slots.Count}");
+        EnsureInitialized();
 
         int remaining = amount;
 
         // сначала стакуем
         foreach (var slot in slots)
         {
-            Debug.Log($"[AddItem] Проверяем слот {slot.slotUI.name}, item={(slot.item == null ? "NULL" : slot.item.itemName)}, amount={slot.amount}");
             if (slot.HasItem(newItem) && slot.amount < MaxStack)
             {
                 int canAdd = Mathf.Min(MaxStack - slot.amount, remaining);
                 slot.AddAmount(canAdd);
                 remaining -= canAdd;
-                // Debug.Log($"[AddItem] Стакуем {newItem.itemName}, остаток {remaining}");
 
-                if (remaining <= 0)
-                {
-                    DebugInventory();
-                    return;
-                }
+                if (remaining <= 0) return;
             }
         }
 
-        // если некуда стакать — кладём в пустые
+        // затем кладём в пустые
         foreach (var slot in slots)
         {
             if (slot.IsEmpty())
@@ -132,31 +131,98 @@ public class InventoryUI : MonoBehaviour
                 int putAmount = Mathf.Min(MaxStack, remaining);
                 slot.SetItem(newItem, putAmount);
                 remaining -= putAmount;
-                Debug.Log($"[AddItem] Новый слот: {newItem.itemName} x{putAmount}");
 
-                if (remaining <= 0)
-                {
-                    DebugInventory();
-                    return;
-                }
+                if (remaining <= 0) return;
             }
         }
 
         if (remaining > 0)
             Debug.LogWarning($"[AddItem] Не хватило места для {newItem.itemName}, остаток {remaining}");
-
-        DebugInventory();
     }
 
-    private void DebugInventory()
+    // -------------------------------
+    // Drag&Drop
+    // -------------------------------
+    public void StartDrag(SlotUI slot)
     {
-        Debug.Log("=== Текущее содержимое инвентаря ===");
-        for (int i = 0; i < slots.Count; i++)
+        int index = slots.FindIndex(s => s.slotUI == slot);
+        if (index < 0 || slots[index].IsEmpty()) return;
+
+        draggedSlot = slot;
+        dragIconInstance = Instantiate(dragIconPrefab, transform.parent);
+        dragIconInstance.sprite = slot.icon.sprite;
+        dragIconInstance.transform.SetAsLastSibling();
+        dragIconInstance.raycastTarget = false;
+    }
+
+    public void UpdateDrag(PointerEventData eventData)
+    {
+        if (dragIconInstance != null)
+            dragIconInstance.transform.position = eventData.position;
+    }
+
+    public void EndDrag()
+    {
+        if (dragIconInstance != null)
+            Destroy(dragIconInstance.gameObject);
+
+        dragIconInstance = null;
+        draggedSlot = null;
+    }
+
+    public void DropItem(SlotUI targetSlot)
+    {
+        if (draggedSlot == null || targetSlot == null) return;
+
+        int fromIndex = slots.FindIndex(s => s.slotUI == draggedSlot);
+        int toIndex = slots.FindIndex(s => s.slotUI == targetSlot);
+
+        if (fromIndex < 0 || toIndex < 0) return;
+
+        var from = slots[fromIndex];
+        var to = slots[toIndex];
+
+        if (from == to) { EndDrag(); return; }
+
+        // -----------------------------
+        // 1. если таргет пустой → просто перемещаем
+        // -----------------------------
+        if (to.item == null || to.amount <= 0)
         {
-            var slot = slots[i];
-            if (!slot.IsEmpty())
-                Debug.Log($"Слот {i + 1}: {slot.item.itemName} x{slot.amount}");
+            to.SetItem(from.item, from.amount);
+            from.SetItem(null, 0);
+            EndDrag();
+            return;
         }
+
+        // -----------------------------
+        // 2. если такой же предмет → стакуем
+        // -----------------------------
+        if (to.item != null && from.item != null && to.item.itemID == from.item.itemID)
+        {
+            int canAdd = Mathf.Min(MaxStack - to.amount, from.amount);
+            to.AddAmount(canAdd);
+            from.amount -= canAdd;
+
+            if (from.amount <= 0)
+                from.SetItem(null, 0);
+            else
+                from.slotUI.ForceRefresh(from.item, from.amount);
+
+            EndDrag();
+            return;
+        }
+
+        // -----------------------------
+        // 3. иначе свап
+        // -----------------------------
+        var tmpItem = to.item;
+        var tmpAmount = to.amount;
+
+        to.SetItem(from.item, from.amount);
+        from.SetItem(tmpItem, tmpAmount);
+
+        EndDrag();
     }
 
 }
